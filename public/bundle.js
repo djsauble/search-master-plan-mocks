@@ -2,6 +2,8 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
+var FilterView = require('./views/Filter');
+
 var View = Backbone.View.extend({
   className: "search_app",
 
@@ -15,11 +17,6 @@ var View = Backbone.View.extend({
       <button class="dropdown">Search</button>
     </div>
     <div class="filter">
-      <a class="toggle" href="#">Show filters&hellip;</a>
-      <div class="options">
-        <button class="dropdown combo">Choose format</button>
-        <button class="dropdown combo">Choose repository</button>
-      </div>
     </div>
     <div class="results">
       <div class="count">20 results found</div>
@@ -42,11 +39,18 @@ var View = Backbone.View.extend({
     </div>
   `),
 
+  initialize: function() {
+    // Child views
+    this.filterView = new FilterView;
+  },
+
   render: function() {
     this.$el.html(this.template({
       title: "Search",
       subtitle: "Search for packages",
     }));
+
+    this.$('.filter').append(this.filterView.render().el);
 
     return this;
   }
@@ -54,7 +58,7 @@ var View = Backbone.View.extend({
 
 module.exports = View;
 
-},{"backbone":3,"underscore":5}],2:[function(require,module,exports){
+},{"./views/Filter":3,"backbone":4,"underscore":6}],2:[function(require,module,exports){
 var $ = require('jquery');
 var AppView = require('./app');
 
@@ -64,7 +68,62 @@ $(function() {
   $("#app_root").html(view.render().el);
 });
 
-},{"./app":1,"jquery":4}],3:[function(require,module,exports){
+},{"./app":1,"jquery":5}],3:[function(require,module,exports){
+var _ = require('underscore');
+var Backbone = require('backbone');
+
+// State for the filter control
+var Model = Backbone.Model.extend({
+  defaults: {
+    hidden: true
+  },
+  toggle: function() {
+    this.set('hidden', !this.get('hidden'));
+  }
+});
+
+// View for the filter control
+var View = Backbone.View.extend({
+  className: 'filter',
+
+  model: new Model,
+
+  events: {
+    'click .toggle': 'toggle'
+  },
+
+  template: _.template(`
+    <% if (hidden) { %>
+      <a class='toggle' href='#'>Show filters&hellip;</a>
+    <% } else { %>
+      <div class='options'>
+        <button class='dropdown combo'>Choose format</button>
+        <button class='dropdown combo'>Choose repository</button>
+      </div>
+      <a class='toggle' href='#'>Hide filters&hellip;</a>
+    <% } %>
+  `),
+
+  initialize: function() {
+    this.listenTo(this.model, 'change', this.render);
+  },
+
+  render: function() {
+    this.$el.html(this.template({
+      hidden: this.model.get('hidden')
+    }));
+
+    return this;
+  },
+
+  toggle: function() {
+    this.model.toggle();
+  }
+});
+
+module.exports = View;
+
+},{"backbone":4,"underscore":6}],4:[function(require,module,exports){
 (function (global){
 //     Backbone.js 1.3.3
 
@@ -1988,7 +2047,7 @@ $(function() {
 });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"jquery":4,"underscore":5}],4:[function(require,module,exports){
+},{"jquery":5,"underscore":6}],5:[function(require,module,exports){
 /*eslint-disable no-unused-vars*/
 /*!
  * jQuery JavaScript Library v3.1.0
@@ -12064,7 +12123,7 @@ if ( !noGlobal ) {
 return jQuery;
 } );
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
 //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors

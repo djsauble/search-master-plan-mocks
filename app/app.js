@@ -1,6 +1,8 @@
 var _ = require('underscore');
 var Backbone = require('backbone');
 
+var FilterView = require('./views/Filter');
+
 var View = Backbone.View.extend({
   className: "search_app",
 
@@ -14,11 +16,6 @@ var View = Backbone.View.extend({
       <button class="dropdown">Search</button>
     </div>
     <div class="filter">
-      <a class="toggle" href="#">Show filters&hellip;</a>
-      <div class="options">
-        <button class="dropdown combo">Choose format</button>
-        <button class="dropdown combo">Choose repository</button>
-      </div>
     </div>
     <div class="results">
       <div class="count">20 results found</div>
@@ -41,11 +38,18 @@ var View = Backbone.View.extend({
     </div>
   `),
 
+  initialize: function() {
+    // Child views
+    this.filterView = new FilterView;
+  },
+
   render: function() {
     this.$el.html(this.template({
       title: "Search",
       subtitle: "Search for packages",
     }));
+
+    this.$('.filter').append(this.filterView.render().el);
 
     return this;
   }

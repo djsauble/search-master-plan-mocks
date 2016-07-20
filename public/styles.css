@@ -1,4 +1,12 @@
 /**
+ * Class switches
+ */
+
+.hide {
+  display: none;
+}
+
+/**
  * Header
  */
 
@@ -16,13 +24,6 @@
 
 .search textarea {
   width: 500px;
-}
-
-/**
- * Filters
- */
-.options {
-  display: none;
 }
 
 /**
